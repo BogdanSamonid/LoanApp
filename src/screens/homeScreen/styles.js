@@ -28,16 +28,20 @@ export default StyleSheet.create({
         marginRight: 5
     },
     button: {
-        height: 47,
+        height: 25,
+        width: 65,
         borderRadius: 5,
-        backgroundColor: '#788eec',
-        width: 80,
+        borderWidth: 1,
+        borderColor: 'white',
+        backgroundColor: '#f4511e',
         alignItems: "center",
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginRight: 20
     },
     buttonText: {
         color: 'white',
-        fontSize: 16
+        fontWeight: 'bold',
+        fontSize: 18
     },
     listContainer: {
         marginTop: 20,
