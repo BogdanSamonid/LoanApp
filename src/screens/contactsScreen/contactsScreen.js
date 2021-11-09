@@ -6,15 +6,16 @@ import {
 } from 'react-native';
 import { firebase } from '../../firebase/config';
 import styles from './styles';
+import {SearchBar} from "react-native-screens";
 
-export default function HomeScreen({navigation}) {
+export default function ContactsScreen({navigation}) {
 
     const onLogoutPress =() => {
         firebase
             .auth()
             .signOut()
             .then(() => {
-                navigation.navigate('Login');
+                navigation.navigate('Login')
             })
             .catch(error => {
                 alert(error);
@@ -32,11 +33,14 @@ export default function HomeScreen({navigation}) {
             ),
 
         });
-    }, [navigation]);
+    }, []);
 
     return (
         <View style={styles.container}>
+            <SearchBar>
+            >
+            </SearchBar>
+            <Button> Add</Button>
         </View>
     )
 };
-
