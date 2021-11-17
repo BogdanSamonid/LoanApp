@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { firebase } from '../../firebase/config';
 import styles from './styles';
 
