@@ -6,9 +6,10 @@ import {
 } from 'react-native';
 import { firebase } from '../../firebase/config';
 
-export default function FeedScreen({navigation}) {
+export default function InboxScreen({navigation}) {
     return (
-        <View>
+        <View >
+            Inbox Screen
         </View>
     )
 };
