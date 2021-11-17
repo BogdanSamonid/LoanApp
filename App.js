@@ -1,16 +1,12 @@
-import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react'
-import { firebase } from './src/firebase/config'
+import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
-import {LoginScreen, RegistrationScreen, HomeScreen, InboxScreen} from './src/screens'
-import {BottomTab} from "./src/components";
-import {decode, encode} from 'base-64'
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {Button} from "react-native";
-import View from "react-native-web/dist/vendor/react-native/Animated/components/AnimatedView";
-import Text from "react-native-web/dist/vendor/react-native/Animated/components/AnimatedText";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { decode, encode } from 'base-64'
+import { firebase } from './src/firebase/config'
+import { LoginScreen, RegistrationScreen } from './src/screens'
+import { BottomTab } from "./src/components";
+
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
@@ -62,7 +58,7 @@ export default function App() {
         }}>
             { user ? (
                 <MainStack.Group>
-                    <MainStack.Screen name="Home" component={BottomTab}/>
+                    <MainStack.Screen name="Home" component={BottomTab} options={{headerShown: false}}/>
                 </MainStack.Group>
             ) : (
                 <MainStack.Group>

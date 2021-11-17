@@ -1,9 +1,10 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useRef } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import {HomeScreen, InboxScreen} from '../../screens'
+import { StyleSheet, TouchableOpacity } from 'react-native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
+import { HomeScreen, InboxScreen } from '../../screens'
+import { HeaderBar } from "../index";
 
 const Icon = ({type, name, color, size=24, style}) => {
     const fontSize = 24;
@@ -53,7 +54,6 @@ export default function BottomTab() {
     return (
         <Tab.Navigator
         screenOptions={{
-            headerShown: false, //dispare header-ul cu butonul de logout care e pe pagina de HomeScreen
             tabBarStyle: {
                 height: 60,
                 position: 'absolute',
@@ -68,6 +68,7 @@ export default function BottomTab() {
                     <Tab.Screen name={item.route}
                                 component={item.component}
                                 options={{
+                                    headerTitle: () => <HeaderBar page={item.label}/>,
                                     tabBarShowLabel: false,
                                     tabBarButton: (props) => <TabButton {...props} item={item}/>
                                 }} />
