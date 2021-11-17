@@ -3,13 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { firebase } from './src/firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { LoginScreen, HomeScreen, RegistrationScreen } from './src/screens'
+import {LoginScreen, RegistrationScreen, HomeScreen, InboxScreen} from './src/screens'
 import {decode, encode} from 'base-64'
-import ContactsScreen from "./src/screens/contactsScreen/contactsScreen";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {Button} from "react-native";
+import View from "react-native-web/dist/vendor/react-native/Animated/components/AnimatedView";
+import Text from "react-native-web/dist/vendor/react-native/Animated/components/AnimatedText";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
 
@@ -45,7 +49,7 @@ export default function App() {
 
     return (
     <NavigationContainer>
-        <Stack.Navigator screenOptions={{
+        <Tab.Navigator screenOptions={{
             headerStyle: {
                 backgroundColor: '#93b2da',
             },
@@ -56,18 +60,19 @@ export default function App() {
             headerTitleAlign: 'left',
         }}>
             { user ? (
-                <>
-                    <Stack.Screen name="Home" component={HomeScreen}/>
-                    <Stack.Screen name="Contacts" component={ContactsScreen}/>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                </>
+                <Tab.Group>
+                    <Tab.Screen name="Home" component={HomeScreen}/>
+                    <Tab.Screen name="Inbox" component={InboxScreen} />
+                    <Tab.Screen name="Feed" component={FeedScreen} />
+                    <Tab.Screen name="Contacts" component={ContactsScreen} />
+                </Tab.Group>
             ) : (
-                <>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Registration" component={RegistrationScreen} />
-                </>
+                <Tab.Group>
+                    <Tab.Screen name="Login" component={LoginScreen} />
+                    <Tab.Screen name="Registration" component={RegistrationScreen} />
+                </Tab.Group>
             )}
-        </Stack.Navigator>
+        </Tab.Navigator>
     </NavigationContainer>
     );
 }
