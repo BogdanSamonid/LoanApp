@@ -4,6 +4,7 @@ import { firebase } from './src/firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import {LoginScreen, RegistrationScreen, HomeScreen, InboxScreen} from './src/screens'
+import {BottomTab} from "./src/components";
 import {decode, encode} from 'base-64'
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {Button} from "react-native";
@@ -13,7 +14,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
-const Tab = createBottomTabNavigator();
+const MainStack= createNativeStackNavigator();
 
 export default function App() {
 
@@ -49,7 +50,7 @@ export default function App() {
 
     return (
     <NavigationContainer>
-        <Tab.Navigator screenOptions={{
+        <MainStack.Navigator screenOptions={{
             headerStyle: {
                 backgroundColor: '#93b2da',
             },
@@ -60,19 +61,16 @@ export default function App() {
             headerTitleAlign: 'left',
         }}>
             { user ? (
-                <Tab.Group>
-                    <Tab.Screen name="Home" component={HomeScreen}/>
-                    <Tab.Screen name="Inbox" component={InboxScreen} />
-                    <Tab.Screen name="Feed" component={FeedScreen} />
-                    <Tab.Screen name="Contacts" component={ContactsScreen} />
-                </Tab.Group>
+                <MainStack.Group>
+                    <MainStack.Screen name="Home" component={BottomTab}/>
+                </MainStack.Group>
             ) : (
-                <Tab.Group>
-                    <Tab.Screen name="Login" component={LoginScreen} />
-                    <Tab.Screen name="Registration" component={RegistrationScreen} />
-                </Tab.Group>
+                <MainStack.Group>
+                    <MainStack.Screen name="Login" component={LoginScreen} />
+                    <MainStack.Screen name="Registration" component={RegistrationScreen} />
+                </MainStack.Group>
             )}
-        </Tab.Navigator>
+        </MainStack.Navigator>
     </NavigationContainer>
     );
 }

@@ -9,7 +9,6 @@ import { firebase } from '../../firebase/config';
 export default function InboxScreen({navigation}) {
     return (
         <View >
-            Inbox Screen
         </View>
     )
 };
