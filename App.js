@@ -58,7 +58,7 @@ export default function App() {
         }}>
             { user ? (
                 <MainStack.Group>
-                    <MainStack.Screen name="Home" component={BottomTab} options={{headerShown: false}}/>
+                    <MainStack.Screen name="Main" component={BottomTab} options={{headerShown: false}}/>
                 </MainStack.Group>
             ) : (
                 <MainStack.Group>
