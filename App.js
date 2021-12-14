@@ -4,8 +4,9 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { decode, encode } from 'base-64'
 import { firebase } from './src/firebase/config'
-import { LoginScreen, RegistrationScreen } from './src/screens'
+import { LoginScreen, RegistrationScreen, TransactionScreen } from './src/screens'
 import { BottomTab } from "./src/components";
+
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -58,7 +59,8 @@ export default function App() {
         }}>
             { user ? (
                 <MainStack.Group>
-                    <MainStack.Screen name="Main" component={BottomTab} options={{headerShown: false}}/>
+                    <MainStack.Screen name="Home" component={BottomTab} options={{headerShown: false}}/>
+                    <MainStack.Screen name="Create Transaction" component={TransactionScreen}/>
                 </MainStack.Group>
             ) : (
                 <MainStack.Group>
