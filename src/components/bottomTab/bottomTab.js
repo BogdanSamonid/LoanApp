@@ -32,9 +32,9 @@ const TabButton = (props) => {
 
     useEffect(() => {
         if(focused) {
-            viewRef.current.animate({0: {scale: 1, rotate: '0deg'}, 1: {scale: 1.5, rotate: '360deg'}});
+            viewRef.current.animate({0: {scale: 0.75, rotate: '0deg'}, 1: {scale: 1, rotate: '360deg'}});
         } else {
-            viewRef.current.animate({0: {scale: 1.5}, 1: {scale: 1}});
+            viewRef.current.animate({0: {scale: 1}, 1: {scale: 0.75}});
         }
     }, [focused])
     return (
@@ -44,7 +44,7 @@ const TabButton = (props) => {
             <Animatable.View style={styles.container}
                              ref={viewRef}
                              duration={1000}>
-                <Icon type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? '#93b2da' : '#c4ceda'}/>
+                <Icon type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? '#77b3d4' : '#c4ceda'}/>
             </Animatable.View>
         </TouchableOpacity>
     )
@@ -55,7 +55,7 @@ export default function BottomTab() {
         <Tab.Navigator
         screenOptions={{
             tabBarStyle: {
-                height: 60,
+                height: 40,
                 position: 'absolute',
                 bottom: 16,
                 right: 16,
