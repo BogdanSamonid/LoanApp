@@ -5,10 +5,11 @@ import { firebase } from '../../firebase/config'
 import styles from './styles';
 
 export default function RegistrationScreen({navigation}) {
-    const [fullName, setFullName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const friends = {};
 
     const onFooterLinkPress = () => {
         navigation.navigate('Login')
@@ -29,6 +30,7 @@ export default function RegistrationScreen({navigation}) {
                     id: uid,
                     email,
                     fullName,
+                    friends,
                 };
                 const usersRef = firebase.firestore().collection('users')
                 usersRef

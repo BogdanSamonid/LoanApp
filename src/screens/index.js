@@ -3,3 +3,4 @@ export { default as RegistrationScreen } from './registrationScreen/registration
 export { default as HomeScreen } from './homeScreen/homeScreen'
 export { default as InboxScreen } from './inboxScreen/inboxScreen'
 export { default as TransactionScreen } from "./transactionScreen/transactionScreen";
+export { default as ContactsScreen } from './contactsScreen/contactsScreen'

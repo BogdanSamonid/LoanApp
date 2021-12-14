@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
 import { HomeScreen, InboxScreen } from '../../screens'
 import { HeaderBar } from "../index";
+import ContactsScreen from "../../screens/contactsScreen/contactsScreen";
 
 const Icon = ({type, name, color, size=24, style}) => {
     const fontSize = 24;
@@ -21,6 +22,7 @@ const Icon = ({type, name, color, size=24, style}) => {
 const TabArr = [
     { route: 'Home', label: 'Home', type: Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen },
     { route: 'Inbox', label: 'Inbox', type: Ionicons, activeIcon: 'mail', inActiveIcon: 'mail-outline', component: InboxScreen },
+    { route: 'Contacts', label: 'Contacts', type: Ionicons, activeIcon: 'people', inActiveIcon: 'people-outline', component: ContactsScreen },
 ];
 
 const Tab = createBottomTabNavigator();
@@ -63,7 +65,7 @@ export default function BottomTab() {
                 borderRadius: 20
             }
         }}>
-            {TabArr.map((item, index) => {
+            {TabArr.map((item) => {
                 return (
                     <Tab.Screen name={item.route}
                                 component={item.component}
