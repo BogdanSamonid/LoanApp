@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { decode, encode } from 'base-64'
 import { firebase } from './src/firebase/config'
 import { LoginScreen, RegistrationScreen, TransactionScreen } from './src/screens'
-import { BottomTab } from "./src/components";
+import {BottomTab, HeaderBar} from "./src/components";
 
 
 if (!global.btoa) {  global.btoa = encode }
@@ -17,6 +17,12 @@ export default function App() {
 
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
+
+    /*firebase.firestore().collection("users").get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            console.log(doc.id, " => ", doc.data());
+        })
+    })*/
 
     useEffect(() => {
         const usersRef = firebase.firestore().collection('users');
@@ -59,8 +65,10 @@ export default function App() {
         }}>
             { user ? (
                 <MainStack.Group>
-                    <MainStack.Screen name="Home" component={BottomTab} options={{headerShown: false}}/>
-                    <MainStack.Screen name="Create Transaction" component={TransactionScreen}/>
+                    <MainStack.Screen name="Main" component={BottomTab} options={{headerShown: false}}/>
+                    <MainStack.Screen name="Transaction" component={TransactionScreen}
+                                      options={{headerShown: false}}
+                    />
                 </MainStack.Group>
             ) : (
                 <MainStack.Group>
