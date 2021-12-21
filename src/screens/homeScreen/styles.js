@@ -1,40 +1,11 @@
-import { StyleSheet } from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: "flex-start",
-        marginTop: 100
-    },
-
-    formContainer: {
-        flexDirection: 'row',
-        height: 80,
-        marginTop: 40,
-        marginBottom: 20,
-        flex: 1,
-        paddingTop: 10,
-        paddingBottom: 10,
-        paddingLeft: 30,
-        paddingRight: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    input: {
-        height: 48,
-        borderRadius: 5,
-        overflow: 'hidden',
-        backgroundColor: 'white',
-        paddingLeft: 16,
-        flex: 1,
-        marginRight: 5
-    },
     button: {
         height: 25,
         width: 65,
         borderRadius: 5,
-        backgroundColor: '#788eec',
+        backgroundColor: '#77b3d4',
         alignItems: "center",
         justifyContent: 'center',
         marginRight: 20
@@ -44,18 +15,87 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18
     },
-    listContainer: {
-        marginTop: 20,
-        padding: 20,
+    header: {
+        width: '100%',
+        height: 225,
     },
-    entityContainer: {
-        marginTop: 16,
-        borderBottomColor: '#cccccc',
-        borderBottomWidth: 1,
-        paddingBottom: 16
+    headerText: {
+        width: '100%',
+        height: 160,
+        justifyContent: 'center',
+        position: 'absolute',
     },
-    entityText: {
-        fontSize: 20,
-        color: '#333333'
+    filter: {
+        width: '100%',
+        height: 300,
+        backgroundColor: '#77b3d4',
+        position: 'absolute',
+        opacity: .7
+    },
+    headerTitle: {
+        fontSize: 30,
+        color: 'white',
+        fontWeight: 'bold',
+        marginLeft: 20
+    },
+    headerDescription: {
+        fontSize: 18,
+        color: 'white',
+        marginLeft: 20,
+        marginRight: 50
+    },
+    container: {
+        display: 'flex',
+        flexDirection: "column",
+        alignItems: "center",
+        backgroundColor: 'white',
+        height: Dimensions.get('window').height /*- 200*/,
+        width: '100%',
+        borderTopRightRadius: 35,
+        borderTopLeftRadius: 35,
+        position: 'absolute',
+        top: 160,
+        flex: 1
+    },
+    containerTitle: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginLeft: 20,
+        marginTop: 10,
+        marginBottom: 10,
+        color: '#77b3d4'
+    },
+    cardContainer: {
+        marginLeft: 20,
+        marginRight: 20,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cardImg: {
+        width: 75,
+        height: 75,
+        margin: 15,
+    },
+    cardDescriptionContainer: {
+        backgroundColor: '#77b3d4',
+        padding: 10,
+        paddingVertical: 15,
+        margin: 15,
+        borderRadius: 5,
+    },
+    cardDescriptionTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    createButton: {
+        marginTop: 100,
+        height: 50,
+        width: "100%",
+        borderRadius: 5,
+        backgroundColor: '#77b3d4',
+        alignSelf: "center",
+        alignItems: "center",
+        justifyContent: "center"
     }
 })

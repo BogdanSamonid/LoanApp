@@ -70,10 +70,11 @@ export default function BottomTab() {
                     <Tab.Screen name={item.route}
                                 component={item.component}
                                 options={{
-                                    headerTitle: () => <HeaderBar page={item.label}/>,
-                                    tabBarShowLabel: false,
+                                    headerShown: false,
+                                    /*headerTitle: () => <HeaderBar page={item.label}/>,
+                                    tabBarShowLabel: false,*/
                                     tabBarButton: (props) => <TabButton {...props} item={item}/>
-                                }} />
+                                }}/>
                         )
             })}
         </Tab.Navigator>

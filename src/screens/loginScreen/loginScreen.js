@@ -3,8 +3,10 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { firebase } from '../../firebase/config'
 import styles from './styles';
+import HomeScreen from "../homeScreen/homeScreen";
+import {useNavigation} from "@react-navigation/native";
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen ({navigation, route}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -22,13 +24,13 @@ export default function LoginScreen({navigation}) {
                 usersRef
                     .doc(uid)
                     .get()
-                    .then(firestoreDocument => {
+                    .then((firestoreDocument) => {
                         if (!firestoreDocument.exists) {
                             alert("User does not exist anymore.")
                             return;
                         }
                         const user = firestoreDocument.data()
-                        navigation.navigate('Home', {user: user})
+                        alert(user.email)
                     })
                     .catch(error => {
                         alert(error)
@@ -78,4 +80,4 @@ export default function LoginScreen({navigation}) {
             </KeyboardAwareScrollView>
         </View>
     )
-}
+};

@@ -6,7 +6,7 @@ export default function headerBar(props) {
     return (
         <View style={styles.header}>
             <View>
-                <Text style={styles.headerText}>LoanApp - {page}</Text>
+                <Text style={styles.headerText}>{page}</Text>
             </View>
         </View>
     )
