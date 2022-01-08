@@ -6,6 +6,8 @@ import { decode, encode } from 'base-64'
 import { firebase } from './src/firebase/config'
 import {InboxScreen, LoginScreen, RegistrationScreen, TransactionScreen} from './src/screens'
 import {BottomTab, HeaderBar} from "./src/components";
+import ContactTransactionHistoryScreen
+    from "./src/screens/contactsScreen/contactTransactionHistoryScreen/contactTransactionHistoryScreen";
 
 
 if (!global.btoa) {  global.btoa = encode }
@@ -62,11 +64,15 @@ export default function App() {
                 fontWeight: 'bold',
             },
             headerTitleAlign: 'left',
-        }}>
+        }}
+        >
             { user ? (
                 <MainStack.Group>
                     <MainStack.Screen name="Main" component={BottomTab} options={{headerShown: false}}/>
                     <MainStack.Screen name="Transaction" component={TransactionScreen}
+                                      options={{headerShown: false}}
+                    />
+                    <MainStack.Screen name="ContactTransactionHistory" component={ContactTransactionHistoryScreen}
                                       options={{headerShown: false}}
                     />
                     <MainStack.Screen name="Inbox" component={InboxScreen}
