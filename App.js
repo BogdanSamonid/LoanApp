@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { decode, encode } from 'base-64'
 import { firebase } from './src/firebase/config'
-import { LoginScreen, RegistrationScreen, TransactionScreen } from './src/screens'
+import {InboxScreen, LoginScreen, RegistrationScreen, TransactionScreen} from './src/screens'
 import {BottomTab, HeaderBar} from "./src/components";
 
 
@@ -67,6 +67,9 @@ export default function App() {
                 <MainStack.Group>
                     <MainStack.Screen name="Main" component={BottomTab} options={{headerShown: false}}/>
                     <MainStack.Screen name="Transaction" component={TransactionScreen}
+                                      options={{headerShown: false}}
+                    />
+                    <MainStack.Screen name="Inbox" component={InboxScreen}
                                       options={{headerShown: false}}
                     />
                 </MainStack.Group>
