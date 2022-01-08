@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Animatable from 'react-native-animatable';
 import { HomeScreen, InboxScreen } from '../../screens'
-import { HeaderBar } from "../index";
 import ContactsScreen from "../../screens/contactsScreen/contactsScreen";
 
 const Icon = ({type, name, color, size=24, style}) => {

@@ -2,6 +2,7 @@ import React from 'react'
 import {Text, TextComponent, TouchableOpacity, StyleSheet, View, Dimensions, ScrollView, FlatList, Image, ImageBackground} from 'react-native';
 import { firebase } from '../../firebase/config';
 import styles from './styles';
+import {IconButton} from "react-native-paper";
 
 export default function HomeScreen ({navigation, route}) {
     //const user = JSON.parse(route.params);
@@ -51,7 +52,6 @@ export default function HomeScreen ({navigation, route}) {
             </View>
             <View style={styles.container}>
                 <Text style={styles.containerTitle}>Your Account</Text>
-
             </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -70,7 +70,6 @@ export default function HomeScreen ({navigation, route}) {
                         </View>
                     </View>
                 </View>
-
                 <View style={styles.cardContainer}>
                     <Image
                         source={require('../../../assets/card-landed.png')}
