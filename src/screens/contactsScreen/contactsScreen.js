@@ -4,25 +4,36 @@ import {
     TextInput,
     View,
     Modal,
-    Pressable, TouchableOpacity
+    TouchableOpacity
 } from 'react-native';
 import { firebase } from '../../firebase/config';
-import {collection, getDocs, getFirestore, query, where, doc, updateDoc, getDoc} from "firebase/firestore";
-import {Button, Text, FlatList, StyleSheet} from "react-native";
+import {
+    collection,
+    getDocs,
+    getFirestore,
+    query,
+    where,
+    doc,
+    updateDoc,
+    getDoc,
+    deleteField,
+    addDoc,
+    setDoc
+} from "firebase/firestore";
+import {Text, FlatList} from "react-native";
 import styles from "./styles";
-import {ScrollView} from "react-native-gesture-handler";
 import {IconButton, Searchbar} from "react-native-paper";
+import { v4 as uuidv4 } from 'uuid';
 
 const db = getFirestore();
 
 export default function ContactsScreen({navigation}) {
-    const [email, setEmail] = useState('');
-    // const [currentUser, setCurrentUser] = useState(null);
     const [addFriendModalVisible, setAddFriendModalVisible] = useState(false);
-    const [users, setUsers] = useState('');
     const [friends, setFriends] = useState([]);
+    const [allFriends, setAllFriends] = useState([])
     const currentUser = useRef(null);
-    const [text, onChangeText] = React.useState("");
+    const [text, onChangeText] = useState("");
+    const [searchQuery, onSearchQuery] = useState("");
 
     const getCurrentUserData = async() => {
         const currentLoggedUser = firebase.auth().currentUser;
@@ -33,14 +44,12 @@ export default function ContactsScreen({navigation}) {
         return docSnap.data();
     }
 
-    const getUsers = async() => {
-        const users = await firebase.firestore().collection('users').get();
-        setUsers(users.docs.map((doc => doc.data())));
-        console.log(users.docs.map((doc => doc.data())));
-    }
-
     const getFriends = async(currentUser) => {
         const friendsUids = Object.keys(currentUser.friends);
+
+        if(!friendsUids.length){
+            return;
+        }
         const q = query(collection(db, "users"), where("id", "in", friendsUids));
 
         const querySnapshot = await getDocs(q);
@@ -51,11 +60,13 @@ export default function ContactsScreen({navigation}) {
             const friend = doc.data();
             friends.push({
                 key: friend.id,
-                fullName: friend.fullName
+                fullName: friend.fullName,
+                status: currentUser.friends[friend.id]
             })
         });
 
          setFriends(friends);
+         setAllFriends(friends);
     }
 
     const addFriend = async (friendEmail) => {
@@ -63,48 +74,90 @@ export default function ContactsScreen({navigation}) {
 
         const querySnapshot = await getDocs(q);
 
-        const friends = [];
+        const searchedUsers = [];
         querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            friends.push(doc.data())
+            searchedUsers.push(doc.data())
         });
 
         if(!currentUser.current){
             return;
         }
 
-        if(!friends.length){
+        if(!searchedUsers.length){
             alert('User not found!');
             return;
         }
 
-        const friendDocRef = doc(db, 'users',friends[0].id);
+        const alreadyFriends = friends?.find(user => user.key === searchedUsers[0].id)
+
+        if(alreadyFriends){
+            alert('You are already friends with this user');
+            return;
+        }
+
+        const friendDocRef = doc(db, 'users',searchedUsers[0].id);
+        const currentUserRef = doc(db, 'users', currentUser.current.id);
+
+        // await updateDoc(friendDocRef, {
+        //     [`friends.${currentUser.current.id}`]: false
+        // });
+
+        await updateDoc(currentUserRef, {
+            [`friends.${searchedUsers[0].id}`]: false
+        });
+
+        const uid = uuidv4();
+        const newInboxRef = doc(db, "inbox",uid);
+
+        //send friend request message
+        await setDoc(newInboxRef, {
+            documentId: searchedUsers[0].id,
+            pendingFriendId: currentUser.current.id,
+            message: `${currentUser.current.fullName} wants to connect`,
+            isAccepted: false,
+            type: "friend request",
+            id: uid,
+        })
+
+        setAddFriendModalVisible(!addFriendModalVisible);
+        alert('Friend request sent!');
+        onChangeText("");
+        getCurrentUserData()
+            .then((user) => getFriends(user));
+    }
+
+    const onDelete = async(friendId) => {
+        const friendDocRef = doc(db, 'users', friendId);
         const currentUserRef = doc(db, 'users', currentUser.current.id);
 
         await updateDoc(friendDocRef, {
-            [`friends.${currentUser.current.id}`]: true
+            [`friends.${currentUser.current.id}`]: deleteField()
         });
 
         await updateDoc(currentUserRef, {
-            [`friends.${friends[0].id}`]: true
+            [`friends.${friendId}`]: deleteField()
         });
-    }
 
-    // const onDelete = async (friendId) => {
-    //
-    // }
+        const remainingFriends = friends?.filter((user) => user.key !== friendId);
+        setFriends(remainingFriends);
+        setAllFriends(remainingFriends);
+        alert('Friend removed successfully!');
+    }
 
     const onSeeTransactionHistoryPress = () => {
         navigation.navigate('ContactTransactionHistory')
     }
 
     useEffect(() => {
-        // getCurrentUserData()
-        //     .then((user) => getFriends(user))
-        // getUsers();
-        // getFriends();
-        // addFriend('tom@example.com');
+        getCurrentUserData()
+            .then((user) => getFriends(user))
     },[]);
+
+    useEffect(() => {
+        if(searchQuery === ""){
+            setFriends(allFriends);
+        }
+    },[searchQuery]);
 
     return (
         <View style={{backgroundColor: 'lightgrey', flex: 1, alignItems: "center"}}>
@@ -130,6 +183,12 @@ export default function ContactsScreen({navigation}) {
                 <Searchbar
                     iconColor={'#77b3d4'}
                     style={{width: "76%", marginBottom: 20}}
+                    onChangeText={onSearchQuery}
+                    value={searchQuery}
+                    onIconPress={() => {
+                        const searchedFriends = friends.filter((friend) => friend.fullName.toLowerCase().includes(searchQuery.toLocaleLowerCase()));
+                            setFriends(searchedFriends);
+                    }}
                 />
             </View>
             <View style={styles.flatListContainer}>
@@ -138,16 +197,22 @@ export default function ContactsScreen({navigation}) {
                     renderItem={({item}) => (
                         <View style={styles.cardDescriptionContainer}>
                             <Text style={styles.headerDescription}>{item.fullName}</Text>
-                            <IconButton
-                                icon={'arrow-right-box'}
-                                color={'white'}
-                                style={styles.icon}
-                                onPress={onSeeTransactionHistoryPress}
-                            />
-                            <IconButton
-                                icon={'trash-can'}
-                                color={'white'}
-                            />
+                            { item.status ? (
+                                <View style={styles.icon} >
+                                    <IconButton
+                                    icon={'arrow-right-box'}
+                                    color={'white'}
+                                    onPress={onSeeTransactionHistoryPress}
+                                    />
+                                    <IconButton
+                                        icon={'trash-can'}
+                                        color={'white'}
+                                        onPress={() => onDelete(item.key)}
+                                    />
+                                </View>
+                            ) :
+                                <Text style={styles.textStyle}>Pending</Text>
+                            }
                         </View>
                     )}
                 />
@@ -171,19 +236,24 @@ export default function ContactsScreen({navigation}) {
                                 placeholder={"Enter user email"}
                                 placeholderTextColor={'#77b3d4'}
                                 textContentType={'emailAddress'}
+                                selectionColor={'#77b3d4'}
                                 style={styles.textInput}
+
                             />
                         </View>
                         <View style={styles.buttonView}>
                             <TouchableOpacity
                                 style={styles.modalButton}
-                                onPress={() => addFriend()}
+                                onPress={() => addFriend(text)}
                             >
                                 <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>Add Friend</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.modalButton}
-                                onPress={() => setAddFriendModalVisible(!addFriendModalVisible)}
+                                onPress={() => {
+                                    setAddFriendModalVisible(!addFriendModalVisible)
+                                    onChangeText("");
+                                }}
                             >
                                 <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>Close</Text>
                             </TouchableOpacity>
