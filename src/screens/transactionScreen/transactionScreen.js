@@ -1,22 +1,147 @@
-import React, {useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Text, TextInput, View, TouchableOpacity, ScrollView, ImageBackground} from 'react-native';
 import styles from "../transactionScreen/styles";
 import { firebase } from '../../firebase/config'
 import BottomTab from "../../components/bottomTab/bottomTab";
 import {IconButton} from "react-native-paper";
 import {CommonActions} from "@react-navigation/native";
+import {collection, doc, getDoc, getDocs, getFirestore, query, where, setDoc} from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
+
+const db = getFirestore();
 
 export default function TransactionScreen({navigation, route}) {
+    const currentUser = useRef(null);
+    const [friends, setFriends] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const [sender, setSender] = useState('');
     const [receiver, setReceiver] = useState('');
     const [amount, setAmount] = useState('');
     const [currency, setCurrency] = useState('');
 
-    const onSubmitPress = () => {
+    const getCurrentUserData = async() => {
+        setLoading(true);
+        const currentLoggedUser = firebase.auth().currentUser;
 
-        alert('new transaction: ' + ' ' + sender + ' ' + receiver + ' ' + amount + ' ' + currency);
+        const docRef = doc(db, "users", currentLoggedUser.uid);
+        const docSnap = await getDoc(docRef);
+        currentUser.current = docSnap.data();
 
-        const dummyData = { hmm: 10 }
+        setLoading(true);
+        return docSnap.data();
+    }
+
+    const getFriends = async(currentUser) => {
+        setLoading(true);
+        const friendsUids = Object.keys(currentUser.friends);
+
+        if (!friendsUids.length) {
+            return;
+        }
+        const q = query(collection(db, "users"), where("id", "in", friendsUids));
+
+        const querySnapshot = await getDocs(q);
+        const allFriends = [];
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            //console.log("DOC: " + doc.id, " => ", doc.data());
+            const friend = doc.data();
+            allFriends.push({
+                key: friend.id,
+                fullName: friend.fullName,
+                email: friend.email,
+                status: currentUser.friends[friend.id]
+            })
+        });
+
+        const acceptedFriends = allFriends.filter((value) => value.status === true);
+        setFriends(acceptedFriends);
+        setLoading(false);
+    }
+    useEffect(() => {
+        getCurrentUserData().then((user) => getFriends(user));
+    }, [])
+
+
+    const onSubmitPress = async () => {
+        let doc_id = 0;
+        let sender_name = "";
+        let receiver_name = "";
+
+        if(sender.length === 0) {
+            alert("Please fill the SENDER field");
+            return;
+        }
+        if(receiver.length === 0) {
+            alert("Please fill the RECEIVER field");
+            return;
+        }
+        if(amount.length === 0) {
+            alert("Please fill the AMOUNT field");
+            return;
+        }
+        if(currency.length === 0) {
+            alert("Please fill the CURRENCY field");
+            return;
+        }
+
+        if(sender === currentUser.current.email) {
+            let receiver_ok = 0;
+            sender_name = currentUser.current.fullName;
+
+            friends.forEach((friend) => {
+                if(friend.email === receiver)
+                    receiver_ok = 1;
+                    receiver_name = friend.fullName,
+                    doc_id= friend.key;
+            })
+
+            if(receiver_ok === 1)
+                console.log("receiver is a friend");
+            else {
+                console.log("receiver is not a friend");
+                alert("Please select a valid friend");
+                return;
+            }
+        }
+        else if(receiver === currentUser.current.email){
+            let sender_ok = 0;
+            receiver_name = currentUser.current.fullName;
+
+            friends.forEach((friend) => {
+                if(friend.email === sender)
+                    sender_ok = 1;
+                    sender_name = friend.fullName,
+                    doc_id= friend.key;
+            })
+
+            if(sender_ok === 1)
+                console.log("sender is a friend");
+            else {
+                console.log("sender is not a friend");
+                alert("Please select a valid friend");
+                return;
+            }
+        }
+        else alert("Please fill your information in either sender or receiver field");
+
+        const tx_id = uuidv4();
+        await firebase.firestore().collection("inbox").add({
+            documentId: doc_id,
+            isAccepted: false,
+            message: "" + sender_name + " owns " + receiver_name + " " + amount + " " + currency,
+            transactionId: tx_id,
+            type: "TRANSACTION"
+        })
+
+        //alert('new transaction: ' + ' ' + sender + ' ' + receiver + ' ' + amount + ' ' + currency);
+        alert("Request submitted")
+        navigation.navigate('Home');
+
+
+        /*
+        const dummyData = { hmm: 10 }*/
         /*const data = {
             amount: 10,
             currencyId: ,
@@ -26,7 +151,7 @@ export default function TransactionScreen({navigation, route}) {
             senderId: ,
             date:
         }*/
-        const loansRef = firebase.firestore().collection('loans')
+        /*const loansRef = firebase.firestore().collection('loans')
         loansRef
             .doc()
             .set(dummyData)
@@ -35,7 +160,7 @@ export default function TransactionScreen({navigation, route}) {
                 navigation.navigate('Main')
             })
             .catch(error => {
-                alert(error.message)});
+                alert(error.message)});*/
     }
 
     return (
@@ -64,6 +189,7 @@ export default function TransactionScreen({navigation, route}) {
                 showsVerticalScrollIndicator={false}
                 style={{marginBottom: 50, display: "flex", flexDirection: "column"}}
             >
+                {loading ? <Text style={{alignSelf: "center", color: "#77b3d4"}}>Loading ...</Text> : null}
                 <View style={styles.cardDescriptionContainer}>
                     <Text style={styles.headerDescription}>Sender</Text>
                     <TextInput
