@@ -19,6 +19,7 @@ import {
     deleteField,
     deleteDoc
 } from "firebase/firestore";
+import {v4 as uuidv4} from "uuid";
 
 const Icon = ({type, name, color, size=24, style}) => {
     const fontSize = 24;
@@ -69,6 +70,7 @@ export default function InboxScreen({navigation}) {
 
         if(inboxMessage.type === "friend request"){
             console.log("FRiend req");
+
             //get pending friend document
             const pendingFriendDocRef = doc(db, 'users', inboxMessage.pendingFriendId);
             const docSnap = await getDoc(pendingFriendDocRef);
@@ -85,19 +87,46 @@ export default function InboxScreen({navigation}) {
             //mark friend request as accepted
             console.log("inboxMessage",inboxMessage);
             const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
-            await setDoc(inboxMessageRef,{
-                isAccepted: "true"
-            }, {merge: true});
-
-            //clear inbox
-            const remainingPendingMessages = entries.filter((message) => message.isAccepted === false);
-            setEntries(remainingPendingMessages);
+            await updateDoc(inboxMessageRef, {
+                [`isAccepted`]: true
+            });
 
             alert(`You are now friends with ${pendingFriend.fullName}`);
+
+
         }
+        else if(inboxMessage.type === "TRANSACTION"){
+            console.log("TRANSACTION");
+
+            //create loan
+            const tx_id = uuidv4();
+            await firebase.firestore().collection("loans").add({
+                amount: inboxMessage.amount,
+                currency: inboxMessage.currency,
+                /*date*/
+                isAccepted: true,
+                isPaid: false,
+                receiver: inboxMessage.receiver,
+                sender: inboxMessage.sender,
+                transactionId: tx_id,
+            })
+
+            //mark friend request as accepted
+            console.log("inboxMessage",inboxMessage);
+            const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
+            await updateDoc(inboxMessageRef, {
+                [`isAccepted`]: true
+            });
+
+        }
+
+        //clear inbox
+        const remainingPendingMessages = entries.filter((message) => message.isAccepted === false);
+        setEntries(remainingPendingMessages);
 
     }
     const declineRequest = async(inboxMessage) => {
+
         if(inboxMessage.type === "friend request"){
             //get pending friend document
             const pendingFriendDocRef = doc(db, 'users', inboxMessage.pendingFriendId);
@@ -111,18 +140,19 @@ export default function InboxScreen({navigation}) {
             await updateDoc(currentUserRef, {
                 [`friends.${pendingFriend.id}`]: deleteField()
             });
-
-            //mark friend request as accepted
-            console.log("inboxMessage",inboxMessage);
-            const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
-            await deleteDoc(inboxMessageRef);
-
-            //clear inbox
-            const remainingPendingMessages = entries.filter((message) => message.id !== inboxMessageRef.id);
-            setEntries(remainingPendingMessages);
-            alert(`You have declined ${pendingFriend.fullName}'s friend request`);
         }
-        // alert('decline pressed');
+        else if(inboxMessage.type === "TRANSACTION");{
+            /*DELETE*/
+
+        }
+        //mark request as rejected
+        console.log("inboxMessage",inboxMessage);
+        const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
+        await deleteDoc(inboxMessageRef);
+
+        //clear inbox
+        const remainingPendingMessages = entries.filter((message) => message.id !== inboxMessageRef.id);
+        setEntries(remainingPendingMessages);
     }
 
     return (

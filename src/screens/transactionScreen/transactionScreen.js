@@ -128,11 +128,15 @@ export default function TransactionScreen({navigation, route}) {
 
         const tx_id = uuidv4();
         await firebase.firestore().collection("inbox").add({
-            documentId: doc_id,
-            isAccepted: false,
-            message: "" + sender_name + " owns " + receiver_name + " " + amount + " " + currency,
             transactionId: tx_id,
-            type: "TRANSACTION"
+            documentId: doc_id,
+            type: "TRANSACTION",
+            sender: sender,
+            receiver: receiver,
+            amount: amount,
+            currency: currency,
+            message: "" + sender_name + " owns " + receiver_name + " " + amount + " " + currency,
+            isAccepted: false,
         })
 
         //alert('new transaction: ' + ' ' + sender + ' ' + receiver + ' ' + amount + ' ' + currency);
