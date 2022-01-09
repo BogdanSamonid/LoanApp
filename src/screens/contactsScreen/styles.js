@@ -99,7 +99,9 @@ export default StyleSheet.create({
         height: 470,
     },
     icon: {
-        marginLeft: 'auto'
+        marginLeft: 'auto',
+        display: "flex",
+        flexDirection: "row"
     },
     pageTitle: {
         display: 'flex',
@@ -126,7 +128,7 @@ export default StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 20,
         padding: 20,
-        height: 'auto',
+        height: "auto",
         width: '80%',
         shadowColor: "#000",
         shadowOffset: {
@@ -151,7 +153,7 @@ export default StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: 7,
+        padding: 10,
     },
     modalTitle: {
         fontSize: 15,
@@ -168,5 +170,13 @@ export default StyleSheet.create({
         borderColor: '#77b3d4',
         borderWidth: 1,
         height: 40,
+    },
+    textStyle: {
+        fontStyle: "italic",
+        fontSize: 16,
+        color: 'white',
+        marginLeft: "auto",
+        marginRight: 22
     }
+
 })

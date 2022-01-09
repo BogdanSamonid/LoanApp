@@ -1,19 +1,24 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {
-    Image,
     ImageBackground,
-    ImageBackgroundComponent,
     ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from "../inboxScreen/styles";
-import * as Animatable from "react-native-animatable";
 import {firebase} from "../../firebase/config";
-import {getDocs} from "firebase/firestore";
+import {
+    doc,
+    getDoc,
+    setDoc,
+    getFirestore,
+    updateDoc,
+    deleteField,
+    deleteDoc
+} from "firebase/firestore";
 
 const Icon = ({type, name, color, size=24, style}) => {
     const fontSize = 24;
@@ -27,35 +32,97 @@ const Icon = ({type, name, color, size=24, style}) => {
     )
 }
 
+const db = getFirestore();
+
 export default function InboxScreen({navigation}) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(false);
     const entriesCollectionRef = firebase.firestore().collection("inbox");
+    const currentUser = useRef(null);
 
-    const {uid} = firebase.auth().currentUser;
-    const id = uid.toString();
+    const getCurrentUserData = async() => {
+        const currentLoggedUser = firebase.auth().currentUser;
+
+        const docRef = doc(db, "users", currentLoggedUser.uid);
+        const docSnap = await getDoc(docRef);
+        currentUser.current = docSnap.data();
+        return docSnap.data();
+    }
 
     function getInbox() {
         setLoading(true);
-        entriesCollectionRef.where('documentId', '==', id).onSnapshot((querySnapshot) => {
+        entriesCollectionRef.where('documentId', '==', currentUser.current.id).onSnapshot((querySnapshot) => {
             const items = [];
             querySnapshot.forEach((doc) => {
                 items.push(doc.data());
             });
-
-            setEntries(items);
+            const pendingMessages = items.filter((message) => message.isAccepted === false);
+            setEntries(pendingMessages);
             setLoading(false);
         })
     }
     useEffect(() => {
-        getInbox();
+        getCurrentUserData().then(() =>  getInbox());
     }, [])
 
-    const acceptRequest = () => {
-        alert('accept pressed');
+    const acceptRequest = async(inboxMessage) => {
+
+        if(inboxMessage.type === "friend request"){
+            console.log("FRiend req");
+            //get pending friend document
+            const pendingFriendDocRef = doc(db, 'users', inboxMessage.pendingFriendId);
+            const docSnap = await getDoc(pendingFriendDocRef);
+            const pendingFriend = docSnap.data();
+            const currentUserRef = doc(db, 'users', currentUser.current.id);
+
+            await updateDoc(pendingFriendDocRef, {
+                [`friends.${currentUser.current.id}`]: true
+            });
+            await updateDoc(currentUserRef, {
+                [`friends.${pendingFriend.id}`]: true
+            });
+
+            //mark friend request as accepted
+            console.log("inboxMessage",inboxMessage);
+            const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
+            await setDoc(inboxMessageRef,{
+                isAccepted: "true"
+            }, {merge: true});
+
+            //clear inbox
+            const remainingPendingMessages = entries.filter((message) => message.isAccepted === false);
+            setEntries(remainingPendingMessages);
+
+            alert(`You are now friends with ${pendingFriend.fullName}`);
+        }
+
     }
-    const declineRequest = () => {
-        alert('decline pressed');
+    const declineRequest = async(inboxMessage) => {
+        if(inboxMessage.type === "friend request"){
+            //get pending friend document
+            const pendingFriendDocRef = doc(db, 'users', inboxMessage.pendingFriendId);
+            const docSnap = await getDoc(pendingFriendDocRef);
+            const pendingFriend = docSnap.data();
+            const currentUserRef = doc(db, 'users', currentUser.current.id);
+
+            await updateDoc(pendingFriendDocRef, {
+                [`friends.${currentUser.current.id}`]: deleteField()
+            });
+            await updateDoc(currentUserRef, {
+                [`friends.${pendingFriend.id}`]: deleteField()
+            });
+
+            //mark friend request as accepted
+            console.log("inboxMessage",inboxMessage);
+            const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
+            await deleteDoc(inboxMessageRef);
+
+            //clear inbox
+            const remainingPendingMessages = entries.filter((message) => message.id !== inboxMessageRef.id);
+            setEntries(remainingPendingMessages);
+            alert(`You have declined ${pendingFriend.fullName}'s friend request`);
+        }
+        // alert('decline pressed');
     }
 
     return (
@@ -87,11 +154,11 @@ export default function InboxScreen({navigation}) {
 
                         </View>
                         <TouchableOpacity style={styles.responseButton}
-                                          onPress={() => acceptRequest()}>
+                                          onPress={() => acceptRequest(entry)}>
                             <Icon type={Ionicons} name="checkmark-circle-outline" color='#00B300'/>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.responseButton}
-                                          onPress={() => declineRequest()}>
+                                          onPress={() => declineRequest(entry)}>
                             <Icon type={Ionicons} name="close-circle-outline" color='#B30000'/>
                         </TouchableOpacity>
                     </View>
