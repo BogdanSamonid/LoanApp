@@ -98,9 +98,11 @@ export default function InboxScreen({navigation}) {
         else if(inboxMessage.type === "TRANSACTION"){
             console.log("TRANSACTION");
 
+            const newTransactionRef = doc(db, "loans",inboxMessage.transactionId);
+
+
             //create loan
-            const tx_id = uuidv4();
-            await firebase.firestore().collection("loans").add({
+            await setDoc(newTransactionRef, {
                 amount: inboxMessage.amount,
                 currency: inboxMessage.currency,
                 /*date*/
@@ -108,14 +110,14 @@ export default function InboxScreen({navigation}) {
                 isPaid: false,
                 receiver: inboxMessage.receiver,
                 sender: inboxMessage.sender,
-                transactionId: tx_id,
+                transactionId:  inboxMessage.transactionId,
             })
 
             //mark friend request as accepted
             console.log("inboxMessage",inboxMessage);
             const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);
             await updateDoc(inboxMessageRef, {
-                [`isAccepted`]: true
+                isAccepted: true
             });
 
         }
@@ -141,10 +143,7 @@ export default function InboxScreen({navigation}) {
                 [`friends.${pendingFriend.id}`]: deleteField()
             });
         }
-        else if(inboxMessage.type === "TRANSACTION");{
-            /*DELETE*/
 
-        }
         //mark request as rejected
         console.log("inboxMessage",inboxMessage);
         const inboxMessageRef =  doc(db, 'inbox', inboxMessage.id);

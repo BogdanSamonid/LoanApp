@@ -127,7 +127,9 @@ export default function TransactionScreen({navigation, route}) {
         else alert("Please fill your information in either sender or receiver field");
 
         const tx_id = uuidv4();
-        await firebase.firestore().collection("inbox").add({
+        const inboxID = uuidv4();
+        const inboxRef = doc(db, "inbox", inboxID);
+        await setDoc(inboxRef, {
             transactionId: tx_id,
             documentId: doc_id,
             type: "TRANSACTION",
@@ -137,7 +139,10 @@ export default function TransactionScreen({navigation, route}) {
             currency: currency,
             message: "" + sender_name + " owns " + receiver_name + " " + amount + " " + currency,
             isAccepted: false,
+            id: inboxID,
         })
+
+
 
         //alert('new transaction: ' + ' ' + sender + ' ' + receiver + ' ' + amount + ' ' + currency);
         alert("Request submitted")
