@@ -34,10 +34,11 @@ export default function ContactsScreen({navigation}) {
     const currentUser = useRef(null);
     const [text, onChangeText] = useState("");
     const [searchQuery, onSearchQuery] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const getCurrentUserData = async() => {
+        setLoading(true);
         const currentLoggedUser = firebase.auth().currentUser;
-
         const docRef = doc(db, "users", currentLoggedUser.uid);
         const docSnap = await getDoc(docRef);
         currentUser.current = docSnap.data();
@@ -45,6 +46,7 @@ export default function ContactsScreen({navigation}) {
     }
 
     const getFriends = async(currentUser) => {
+
         const friendsUids = Object.keys(currentUser.friends);
 
         if(!friendsUids.length){
@@ -67,6 +69,8 @@ export default function ContactsScreen({navigation}) {
 
          setFriends(friends);
          setAllFriends(friends);
+         setLoading(false);
+
     }
 
     const addFriend = async (friendEmail) => {
@@ -144,8 +148,11 @@ export default function ContactsScreen({navigation}) {
         alert('Friend removed successfully!');
     }
 
-    const onSeeTransactionHistoryPress = () => {
-        navigation.navigate('ContactTransactionHistory')
+    const onSeeTransactionHistoryPress = (friendUser) => {
+        navigation.navigate('ContactTransactionHistory',{
+            currentUser: currentUser.current,
+            friendUser: friendUser,
+        });
     }
 
     useEffect(() => {
@@ -192,6 +199,12 @@ export default function ContactsScreen({navigation}) {
                 />
             </View>
             <View style={styles.flatListContainer}>
+                {loading ?
+                    <Text style={{color: '#77b3d4'}}>
+                        Loading ...
+                    </Text>
+                    : null
+                }
                 <FlatList
                     data={friends}
                     renderItem={({item}) => (
@@ -202,7 +215,7 @@ export default function ContactsScreen({navigation}) {
                                     <IconButton
                                     icon={'arrow-right-box'}
                                     color={'white'}
-                                    onPress={onSeeTransactionHistoryPress}
+                                    onPress={() => onSeeTransactionHistoryPress(item)}
                                     />
                                     <IconButton
                                         icon={'trash-can'}

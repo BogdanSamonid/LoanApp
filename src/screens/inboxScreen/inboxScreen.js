@@ -174,7 +174,13 @@ export default function InboxScreen({navigation}) {
                 style={{marginBottom: 50, display: "flex", flexDirection: "column"}}
             >
                 <View style={styles.cardContainer}>
-                    {loading ? <Text style={{alignSelf: "center", color: "#77b3d4"}}>Loading ...</Text> : null}
+                {loading ?
+                    <Text style={{color: '#77b3d4'}}>
+                        Loading ...
+                    </Text>
+                    : null
+                }
+
                 {entries.map((entry) => (
                     <View style={styles.cardContent}>
                         <View style={styles.cardDescriptionContainer}>

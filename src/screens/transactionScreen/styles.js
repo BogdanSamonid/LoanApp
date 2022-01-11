@@ -138,5 +138,14 @@ export default StyleSheet.create({
     },
     bottomTab: {
         width: '100%'
-    }
+    },
+
+    cardDescriptionContainer2: {
+        backgroundColor: '#77b3d4',
+        padding: 10,
+        paddingVertical: 15,
+        margin: 15,
+        borderRadius: 5,
+        width: '60%'
+    },
 })
