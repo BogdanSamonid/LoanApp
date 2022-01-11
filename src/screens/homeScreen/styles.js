@@ -89,7 +89,7 @@ export default StyleSheet.create({
         alignItems: 'center',
     },
     createButton: {
-        marginTop: 100,
+        marginTop: 20,
         height: 50,
         width: "100%",
         borderRadius: 5,

@@ -204,7 +204,7 @@ export default function TransactionScreen({navigation, route}) {
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
-                        placeholder="Enter sender's username"
+                        placeholder="Enter sender's email"
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                         onChangeText={(text) => setSender(text)}
@@ -216,7 +216,7 @@ export default function TransactionScreen({navigation, route}) {
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
-                        placeholder="Enter receiver's username"
+                        placeholder="Enter receiver's email"
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                         onChangeText={(text) => setReceiver(text)}
