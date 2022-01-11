@@ -87,7 +87,6 @@ export default StyleSheet.create({
     cardDescriptionContainer: {
         display: "flex",
         flexDirection: "row",
-        // justifyContent: "center",
         alignItems: "center",
         backgroundColor: '#77b3d4',
         padding: 5,
@@ -177,6 +176,34 @@ export default StyleSheet.create({
         color: 'white',
         marginLeft: "auto",
         marginRight: 22
+    },
+    summaryContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        backgroundColor: '#77b3d4',
+        padding: 5,
+        margin: 7,
+        borderRadius: 5,
+        height: 'auto%',
+        width: '80%',
+        marginBottom: 20,
+    },
+    transactionHistoryCardTitle: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginBottom: 10,
+        marginTop: 20,
+    },
+    transactionsListContainer:{
+        width: '80%',
+        height: 470,
+        borderRadius: 5,
+        backgroundColor: '#77b3d4',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: "center",
     }
 
 })

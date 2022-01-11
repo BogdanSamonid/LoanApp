@@ -83,6 +83,7 @@ export default StyleSheet.create({
         paddingVertical: 15,
         margin: 15,
         borderRadius: 5,
+        width: '60%'
     },
     cardDescriptionTitleContainer: {
         flexDirection: 'row',

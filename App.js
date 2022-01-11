@@ -8,7 +8,9 @@ import {InboxScreen, LoginScreen, RegistrationScreen, TransactionScreen} from '.
 import {BottomTab, HeaderBar} from "./src/components";
 import ContactTransactionHistoryScreen
     from "./src/screens/contactsScreen/contactTransactionHistoryScreen/contactTransactionHistoryScreen";
+import {doc, getFirestore, setDoc} from "firebase/firestore";
 
+const db = getFirestore();
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -25,6 +27,36 @@ export default function App() {
             console.log(doc.id, " => ", doc.data());
         })
     })*/
+    const BASE_URL = 'http://data.fixer.io/api/latest?access_key=58e5a7571841f48f5115f4d32e251c31&format=1&symbols=RON,USD,GBP,RSD,HUF';
+    useEffect(() => {
+        fetch(BASE_URL)
+            .then((res) => res.json())
+            .then((data) => {
+                saveCurrencies(data.rates, data.base)
+            });
+    }, []);
+
+    const saveCurrencies = async(currencies, baseCurrency) => {
+
+        const currencyNames = Object.keys(currencies);
+        for(const currency of currencyNames){
+
+            await setDoc(doc(db, "currencies", currency),
+                {
+                    name: currency,
+                    exchangeRate: currencies[currency]
+                },
+                { merge: true });
+        }
+
+        await setDoc(doc(db, "currencies", baseCurrency),
+            {
+                name: baseCurrency,
+                exchangeRate: 0
+            },
+            { merge: true }
+        );
+    }
 
     useEffect(() => {
         const usersRef = firebase.firestore().collection('users');
