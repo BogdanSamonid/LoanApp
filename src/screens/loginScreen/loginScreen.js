@@ -48,7 +48,7 @@ export default function LoginScreen ({navigation, route}) {
                 keyboardShouldPersistTaps="always">
                 <Image
                     style={styles.logo}
-                    source={require('../../../assets/icon.png')}
+                    source={require('../../../assets/logo.png')}
                 />
                 <TextInput
                     style={styles.input}
@@ -70,7 +70,7 @@ export default function LoginScreen ({navigation, route}) {
                     autoCapitalize="none"
                 />
                 <TouchableOpacity
-                    style={styles.button}
+                    style={styles.loginButton}
                     onPress={() => onLoginPress()}>
                     <Text style={styles.buttonTitle}>Log in</Text>
                 </TouchableOpacity>
